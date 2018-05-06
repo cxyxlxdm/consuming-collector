@@ -32,19 +32,19 @@ class ConsumingProcessor {
             def entryName = jarEntry.name
             def baseExtension = project.extensions.findByType(BaseExtension.class)
             def excludes = baseExtension.packagingOptions.excludes
-            if (!excludes.contains(entryName)) {
+            if (!excludes.contains(entryName) && matchEntryName(entryName)) {
                 def zipEntry = new ZipEntry(entryName)
                 def inputStream = file.getInputStream(jarEntry)
                 jarOutputStream.putNextEntry(zipEntry)
 
-                project.logger.lifecycle 'entryName in ' + jarFile.name + ' : ' + entryName
+                project.logger.debug 'entryName in ' + jarFile.name + ' : ' + entryName
                 if (!entryName.endsWith('.class')) return
                 def classPool = ClassPool.default
                 def ctClass = classPool.makeClass(inputStream, false)
                 if (ctClass.isFrozen()) ctClass.defrost()
                 if (fileRegular(ctClass, includePackages, excludeFiles)) {
-                    ctClass.methods.each {
-                        injectCode(it)
+                    ctClass.declaredMethods.each {
+                        injectCode(it, project)
                     }
                     def bytes = ctClass.toBytecode()
                     jarOutputStream.write(bytes)
@@ -65,11 +65,11 @@ class ConsumingProcessor {
     }
 
     static void processClass(Project project, File file, List<String> includePackages, List<String> excludeFiles) {
-        if ((file && file.isFile())) {
+        if (!(file && file.exists())) {
             return
         }
-        file.eachDirRecurse {
-            if (!it.isDirectory()) {
+        file.eachFileRecurse {
+            if (!it.isDirectory() && matchClassName(it.name)) {
                 def classPool = ClassPool.getDefault()
                 def inputStream = new FileInputStream(it)
                 def ctClass = classPool.makeClass(inputStream, false)
@@ -79,8 +79,8 @@ class ConsumingProcessor {
                 def outputStream = new FileOutputStream(optFile)
 
                 if (fileRegular(ctClass, includePackages, excludeFiles)) {
-                    ctClass.methods.each {
-                        injectCode(it)
+                    ctClass.declaredMethods.each {
+                        injectCode(it, project)
                     }
                 }
 
@@ -98,13 +98,35 @@ class ConsumingProcessor {
         }
     }
 
-    static void injectCode(CtMethod ctMethod) {
-        ctMethod.insertBefore(Constants.INJECTED_CODE_BEFORE_METHOD)
-        ctMethod.insertBefore(Constants.INJECTED_CODE_AFTER_METHOD)
+    static void injectCode(CtMethod ctMethod, Project project) {
+        try {
+            if ('void' == ctMethod.returnType.name) {
+                ctMethod.addLocalVariable('startCollectConsuming', CtClass.longType)
+                ctMethod.insertBefore(Constants.BEFORE_METHOD + Constants.LOGCAT_BEFORE_DEBUG + ctMethod.name + Constants.LOGCAT_AFTER_START)
+                ctMethod.addLocalVariable('endCollectConsuming', CtClass.longType)
+                ctMethod.addLocalVariable('durationCollectConsuming', CtClass.longType)
+                ctMethod.insertAfter(Constants.AFTER_METHOD + Constants.LOGCAT_BEFORE_DEBUG + ctMethod.name + Constants.LOGCAT_AFTER_END
+                        + Constants.LOGCAT_DURATION + Constants.LOGCAT_BEFORE_WARN + ctMethod.name + Constants.LOGCAT_AFTER_DURATION)
+            }
+        } catch (Exception e) {
+            project.logger.error e.message
+        }
     }
 
     static boolean fileRegular(CtClass ctClass, List<String> includePackages, List<String> excludeFiles) {
-        if (includePackages.contains(ctClass.packageName) && !excludeFiles.contains(ctClass.name)) true
-        false
+        if (includePackages.contains(ctClass.packageName) && !excludeFiles.contains(ctClass.name))
+            true
+        else
+            false
+    }
+
+    static boolean matchEntryName(String entryName) {
+        return !entryName.contains('/R\$') && !entryName.endsWith('/R.class') &&
+                !entryName.endsWith('/BuildConfig.class') && !entryName.contains('android/support/')
+    }
+
+    static boolean matchClassName(String className) {
+        return !className.endsWith('R.class') && !className.contains('R\$') &&
+                !className.endsWith('BuildConfig.class') && !className.contains('android.support')
     }
 }

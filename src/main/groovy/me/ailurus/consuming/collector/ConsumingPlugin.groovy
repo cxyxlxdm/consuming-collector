@@ -25,7 +25,7 @@ class ConsumingPlugin implements Plugin<Project> {
     private static void registerTransform(Project project) {
         def extension = project.extensions.getByType(BaseExtension)
         extension.bootClasspath.each {
-            project.logger.lifecycle it.path
+            project.logger.debug it.path
         }
         def transform = new ConsumingTransform(project, extension.bootClasspath)
         extension.registerTransform(transform)

@@ -9,8 +9,14 @@ class Constants {
 
     public static final String PLUGIN_NAME = 'consuming'
 
-    public static final String INJECTED_CODE_BEFORE_METHOD = 'long start = java.lang.System.currentTimeMillis();'
+    public static final String BEFORE_METHOD = 'startCollectConsuming = java.lang.System.currentTimeMillis();\n'
+    public static final String LOGCAT_BEFORE_DEBUG = 'android.util.Log.d("'
+    public static final String LOGCAT_AFTER_START = '", "startCollectConsuming = " + startCollectConsuming);\n'
 
-    public static final String INJECTED_CODE_AFTER_METHOD =
-            'long end = java.lang.System.currentTimeMillis(); long duration = end - start; String funcName = new java.lang.Throwable().getStackTrace()[1].getMethodName(); android.util.Log.d(funcName, duration + "");'
+    public static final String AFTER_METHOD = 'endCollectConsuming = java.lang.System.currentTimeMillis();\n'
+    public static final String LOGCAT_AFTER_END = '", "endCollectConsuming = " + endCollectConsuming);\n'
+    public static final String LOGCAT_DURATION = 'durationCollectConsuming = endCollectConsuming - startCollectConsuming;\n'
+    public static final String LOGCAT_AFTER_DURATION = '", "durationCollectConsuming = " + durationCollectConsuming);}\n'
+
+    public static final String LOGCAT_BEFORE_WARN = 'if (durationCollectConsuming > 50) {android.util.Log.d("'
 }
