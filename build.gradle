@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.github.dcendents:android-maven-gradle-plugin:2.1'
+    }
+}
+
+group 'me.ailurus'
+version '1.0.0-SNAPSHOT'
+
+apply plugin: 'groovy'
+apply plugin: 'com.github.dcendents.android-maven'
+
+repositories {
+    maven {
+        url 'https://dl.google.com/dl/android/maven2/'
+    }
+    jcenter()
+    mavenCentral()
+}
+
+dependencies {
+    compile gradleApi()
+    compile localGroovy()
+    compile 'commons-io:commons-io:2.6'
+    compile 'commons-codec:commons-codec:1.10'
+    compile 'commons-lang:commons-lang:2.6'
+    compile 'com.android.tools.build:gradle:2.3.3'
+    compile 'org.javassist:javassist:3.20.0-GA'
+    compile 'com.android.tools.build:gradle-core:2.3.3'
+    compile 'com.android.tools.build:builder:2.3.3'
+    compile 'dom4j:dom4j:1.6.1'
+}
