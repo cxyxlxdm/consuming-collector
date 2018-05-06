@@ -18,5 +18,5 @@ class Constants {
     public static final String LOGCAT_DURATION = 'durationCollectConsuming = endCollectConsuming - startCollectConsuming;\n'
     public static final String LOGCAT_AFTER_DURATION = '", "durationCollectConsuming = " + durationCollectConsuming);}\n'
 
-    public static final String LOGCAT_BEFORE_WARN = 'if (durationCollectConsuming > 50) {android.util.Log.d("'
+    public static final String LOGCAT_BEFORE_WARN = 'if (durationCollectConsuming > 50) {android.util.Log.w("'
 }

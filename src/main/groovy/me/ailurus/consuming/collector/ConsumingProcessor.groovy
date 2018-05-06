@@ -37,7 +37,7 @@ class ConsumingProcessor {
                 def inputStream = file.getInputStream(jarEntry)
                 jarOutputStream.putNextEntry(zipEntry)
 
-                project.logger.debug 'entryName in ' + jarFile.name + ' : ' + entryName
+                project.logger.info 'entryName in ' + jarFile.name + ' : ' + entryName
                 if (!entryName.endsWith('.class')) return
                 def classPool = ClassPool.default
                 def ctClass = classPool.makeClass(inputStream, false)
@@ -93,7 +93,7 @@ class ConsumingProcessor {
                     if (it.exists()) it.delete()
                     optFile.renameTo(it)
                 }
-                project.logger.debug 'the fully-qualified name of the class is : ' + ctClass.name
+                project.logger.info 'the fully-qualified name of the class is : ' + ctClass.name
             }
         }
     }

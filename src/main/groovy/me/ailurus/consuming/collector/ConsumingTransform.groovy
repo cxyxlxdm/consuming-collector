@@ -75,11 +75,11 @@ class ConsumingTransform extends Transform {
         }
 
         includePackages.each {
-            project.logger.debug 'includePackage : ' + it
+            project.logger.info 'includePackage : ' + it
         }
 
         excludeFiles.each {
-            project.logger.debug 'excludeFile : ' + it
+            project.logger.info 'excludeFile : ' + it
         }
 
         ClassPool pool = ClassPool.default
@@ -92,7 +92,7 @@ class ConsumingTransform extends Transform {
                     } catch (Exception e) {
                         project.logger.error e.message
                     }
-                    project.logger.debug 'pool insert Complete path  : ' + it.absolutePath
+                    project.logger.info 'pool insert Complete path  : ' + it.absolutePath
                 }
             }
         }
@@ -114,14 +114,14 @@ class ConsumingTransform extends Transform {
 
         inputs.each {
             it.jarInputs.each {
-                project.logger.debug 'jar :' + it.file.absolutePath
+                project.logger.info 'jar :' + it.file.absolutePath
                 if (enable) ConsumingProcessor.processJar(project, it.file, includePackages, excludeFiles)
                 File dest = outputProvider.getContentLocation(it.name, it.contentTypes, it.scopes, Format.JAR)
                 FileUtils.copyFile(it.file, dest)
             }
 
             it.directoryInputs.each {
-                project.logger.debug 'dir :' + it.file.absolutePath
+                project.logger.info 'dir :' + it.file.absolutePath
                 if (enable) ConsumingProcessor.processClass(project, it.file, includePackages, excludeFiles)
                 File dest = outputProvider.getContentLocation(it.name, it.contentTypes, it.scopes, Format.DIRECTORY)
                 FileUtils.copyDirectory(it.file, dest)
