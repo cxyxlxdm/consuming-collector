@@ -30,7 +30,3 @@ Collect the time-consuming of method.
         excludeFies = ['xxx', 'xxx']
     }
     ```
-    
-## Issue
-
-**[Not Support]**: Return type is not void;

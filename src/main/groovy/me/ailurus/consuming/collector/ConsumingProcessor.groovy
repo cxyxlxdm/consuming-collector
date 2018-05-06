@@ -100,14 +100,12 @@ class ConsumingProcessor {
 
     static void injectCode(CtMethod ctMethod, Project project) {
         try {
-            if ('void' == ctMethod.returnType.name) {
-                ctMethod.addLocalVariable('startCollectConsuming', CtClass.longType)
-                ctMethod.insertBefore(Constants.BEFORE_METHOD + Constants.LOGCAT_BEFORE_DEBUG + ctMethod.name + Constants.LOGCAT_AFTER_START)
-                ctMethod.addLocalVariable('endCollectConsuming', CtClass.longType)
-                ctMethod.addLocalVariable('durationCollectConsuming', CtClass.longType)
-                ctMethod.insertAfter(Constants.AFTER_METHOD + Constants.LOGCAT_BEFORE_DEBUG + ctMethod.name + Constants.LOGCAT_AFTER_END
-                        + Constants.LOGCAT_DURATION + Constants.LOGCAT_BEFORE_WARN + ctMethod.name + Constants.LOGCAT_AFTER_DURATION)
-            }
+            ctMethod.addLocalVariable('startCollectConsuming', CtClass.longType)
+            ctMethod.insertBefore(Constants.BEFORE_METHOD + Constants.LOGCAT_BEFORE_DEBUG + ctMethod.name + Constants.LOGCAT_AFTER_START)
+            ctMethod.addLocalVariable('endCollectConsuming', CtClass.longType)
+            ctMethod.addLocalVariable('durationCollectConsuming', CtClass.longType)
+            ctMethod.insertAfter(Constants.AFTER_METHOD + Constants.LOGCAT_BEFORE_DEBUG + ctMethod.name + Constants.LOGCAT_AFTER_END
+                    + Constants.LOGCAT_DURATION + Constants.LOGCAT_BEFORE_WARN + ctMethod.name + Constants.LOGCAT_AFTER_DURATION)
         } catch (Exception e) {
             project.logger.error e.message
         }
